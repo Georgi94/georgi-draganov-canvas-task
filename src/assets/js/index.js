@@ -34,12 +34,16 @@ class Geometry {
         ctx.fillStyle = this.color;
         if (this.randomGeometry < 0.5) {
             ctx.beginPath();
-            ctx.arc(this.position.x, this.position.y, this.width, 0, 2 * Math.PI);
+            ctx.arc(this.position.x, this.position.y, this.height, 0, 2 * Math.PI);
             ctx.closePath();
             ctx.fill();
         } else {
             ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
         }
+        
+        ctx.font = '400 20px Roboto';
+        ctx.fillStyle = 'red';
+        ctx.fillText(`${geometryFigures.length}`, 10, 25);
     }
 }
 
@@ -56,9 +60,8 @@ const randomColor = () => {
 let oldTime = 0;
 const canvasWidth = 512;
 const canvasHeight = 512;
-const gravity = 100;
+let gravity = 100;
 const geometryFigures = new Array;
-
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -76,10 +79,40 @@ function animate(ts) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    geometryFigures.forEach(e => {
+    for (let i = 0; i <= geometryFigures.length - 1; i++) {
+        let e = geometryFigures[i];
         e.update(dt);
+
+        if (e.position.y + e.height >= canvas.height) {
+            e.velocityX = (Math.random() * 2 - 1) * 150;
+            e.velocityY = Math.random() * -300 - 20;
+        }
+
+        // circle left border out of bounds bounce back fix
+        if (e.randomGeometry < 0.5) {
+            if (e.position.x - e.width < 0) {
+                e.velocityX *= -1;
+            } else if (e.position.x + e.width >= canvas.width) {
+                e.velocityX *= -1;
+            }
+            if (e.position.y - e.height < 0) {
+                e.velocityY *= -1;
+            }
+        } else {
+            if (e.position.x < 0) {
+                e.velocityX *= -1;
+            } else if (e.position.x + e.width >= canvas.width) {
+                e.velocityX *= -1;
+            }
+            if (e.position.y < 0) {
+                e.velocityY *= -1;
+            }
+        }
+
+        
+
         e.render(ctx);
-    })
+    }
 
     requestAnimationFrame(animate);
 }
@@ -87,10 +120,27 @@ function animate(ts) {
 
 canvas.addEventListener('mousedown', e => {
     const randRadius = getRandomArbitrary(10, 30);
+    let positionX = e.offsetX;
+    let positionY = e.offsetY;
+
+    // click canvas border object create out of bounds fix
+    if (positionY - randRadius < 0) {
+        positionY = randRadius + 1;
+    } else if (positionY + randRadius / 2 > canvas.height) {
+        positionY = canvas.height - randRadius + 1;
+    }
+
+    if (positionX - randRadius < 0) {
+        positionX = randRadius + 1;
+    } else if (positionX + randRadius / 2 > canvas.width) {
+        positionX = canvas.width - randRadius + 1;
+    }
+
+
     const figure = new Geometry({
         position: {
-            x: e.offsetX,
-            y: e.offsetY
+            x: positionX,
+            y: positionY
         },
         width: randRadius,
         height: randRadius,
