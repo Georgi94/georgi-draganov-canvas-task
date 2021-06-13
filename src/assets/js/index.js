@@ -40,7 +40,7 @@ class Geometry {
         } else {
             ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
         }
-        
+
         ctx.font = '400 20px Roboto';
         ctx.fillStyle = 'red';
         ctx.fillText(`${geometryFigures.length}`, 10, 25);
@@ -60,7 +60,6 @@ const randomColor = () => {
 let oldTime = 0;
 const canvasWidth = 512;
 const canvasHeight = 512;
-let gravity = 100;
 const geometryFigures = new Array;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -69,6 +68,10 @@ canvas.width = canvasWidth * devicePixelRatio;
 canvas.height = canvasHeight * devicePixelRatio;
 canvas.style.width = `${canvasWidth}px`;
 canvas.style.height = `${canvasHeight}px`;
+
+let gravity = document.getElementById('gravity-control');
+let gravityValue = gravity.value;
+gravity.addEventListener('change', e => gravityValue = e.target.value);
 
 requestAnimationFrame(animate);
 
@@ -81,6 +84,7 @@ function animate(ts) {
 
     for (let i = 0; i <= geometryFigures.length - 1; i++) {
         let e = geometryFigures[i];
+        e.gravity = gravityValue;
         e.update(dt);
 
         if (e.position.y + e.height >= canvas.height) {
@@ -118,7 +122,7 @@ function animate(ts) {
 }
 
 
-canvas.addEventListener('mousedown', e => {
+canvas.addEventListener('click', e => {
     const randRadius = getRandomArbitrary(10, 30);
     let positionX = e.offsetX;
     let positionY = e.offsetY;
@@ -147,7 +151,7 @@ canvas.addEventListener('mousedown', e => {
         color: randomColor(),
         velocityX: getRandomArbitrary(-200, 200),
         velocityY: getRandomArbitrary(-200, 200),
-        gravity: gravity,
+        gravity: gravityValue,
         randomGeometry: Math.random()
     })
 
