@@ -194,8 +194,85 @@ module.hot.accept(reloadCSS);
 
 require("../css/styles.less");
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Geometry = /*#__PURE__*/function () {
+  function Geometry(_ref) {
+    var _ref$position = _ref.position,
+        position = _ref$position === void 0 ? {
+      x: 0,
+      y: 0
+    } : _ref$position,
+        _ref$width = _ref.width,
+        width = _ref$width === void 0 ? 0 : _ref$width,
+        _ref$height = _ref.height,
+        height = _ref$height === void 0 ? 0 : _ref$height,
+        _ref$color = _ref.color,
+        color = _ref$color === void 0 ? 0 : _ref$color,
+        _ref$velocityX = _ref.velocityX,
+        velocityX = _ref$velocityX === void 0 ? 0 : _ref$velocityX,
+        _ref$velocityY = _ref.velocityY,
+        velocityY = _ref$velocityY === void 0 ? 0 : _ref$velocityY,
+        _ref$gravity = _ref.gravity,
+        gravity = _ref$gravity === void 0 ? 0 : _ref$gravity,
+        _ref$randomGeometry = _ref.randomGeometry,
+        randomGeometry = _ref$randomGeometry === void 0 ? 0.5 : _ref$randomGeometry;
+
+    _classCallCheck(this, Geometry);
+
+    this.position = position;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+    this.velocityX = velocityX;
+    this.velocityY = velocityY;
+    this.gravity = gravity;
+    this.randomGeometry = randomGeometry;
+  }
+
+  _createClass(Geometry, [{
+    key: "update",
+    value: function update(dt) {
+      this.velocityY += this.gravity * dt;
+      this.position.x += this.velocityX * dt;
+      this.position.y += this.velocityY * dt;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      ctx.fillStyle = this.color;
+
+      if (this.randomGeometry < 0.5) {
+        ctx.beginPath();
+        ctx.arc(this.position.x, this.position.y, this.width, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+      }
+    }
+  }]);
+
+  return Geometry;
+}();
+
+var getRandomArbitrary = function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+};
+
+var randomColor = function randomColor() {
+  return "rgb(".concat(Math.round(Math.random()) * 255, ", \n                ").concat(Math.round(Math.random()) * 255, ", \n                ").concat(Math.round(Math.random()) * 255, ")");
+};
+
+var oldTime = 0;
 var canvasWidth = 512;
 var canvasHeight = 512;
+var gravity = 100;
+var geometryFigures = new Array();
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 canvas.width = canvasWidth * devicePixelRatio;
@@ -206,8 +283,33 @@ requestAnimationFrame(animate);
 
 function animate(ts) {
   ts /= 1000;
+  var dt = ts - oldTime;
+  oldTime = ts;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  geometryFigures.forEach(function (e) {
+    e.update(dt);
+    e.render(ctx);
+  });
   requestAnimationFrame(animate);
 }
+
+canvas.addEventListener('mousedown', function (e) {
+  var randRadius = getRandomArbitrary(10, 30);
+  var figure = new Geometry({
+    position: {
+      x: e.offsetX,
+      y: e.offsetY
+    },
+    width: randRadius,
+    height: randRadius,
+    color: randomColor(),
+    velocityX: getRandomArbitrary(-200, 200),
+    velocityY: getRandomArbitrary(-200, 200),
+    gravity: gravity,
+    randomGeometry: Math.random()
+  });
+  geometryFigures.push(figure);
+});
 },{"../css/styles.less":"assets/css/styles.less"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -236,7 +338,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64737" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58284" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
