@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+#canvas {
+  border: 1px solid black;
+  margin: auto;
+}
+
+
+/*# sourceMappingURL=/js.5c615dc2.css.map */
