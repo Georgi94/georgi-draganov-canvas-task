@@ -2,7 +2,6 @@
   "name": "georgi-draganov-canvas-task",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel src/index.html",
@@ -20,7 +19,8 @@
   },
   "homepage": "https://github.com/Georgi94/georgi-draganov-canvas-task#readme",
   "devDependencies": {
+    "@parcel/transformer-less": "^2.0.0-beta.2",
     "less": "^4.1.1",
-    "parcel-bundler": "^1.12.5"
+    "parcel": "^2.0.0-beta.2"
   }
 }

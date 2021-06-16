@@ -12,7 +12,7 @@ class Geometry {
         velocityX = 0,
         velocityY = 0,
         gravity = 0,
-        randomGeometry = 0.5
+        randomGeometry = Math.random()
     }) {
         this.position = position;
         this.width = width;
@@ -60,9 +60,11 @@ const randomColor = () => {
 let oldTime = 0;
 const canvasWidth = 512;
 const canvasHeight = 512;
-const geometryFigures = new Array;
+const geometryFigures = [];
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+
+const BOUNCE_FACTOR = 0.8
 
 canvas.width = canvasWidth * devicePixelRatio;
 canvas.height = canvasHeight * devicePixelRatio;
@@ -70,8 +72,8 @@ canvas.style.width = `${canvasWidth}px`;
 canvas.style.height = `${canvasHeight}px`;
 
 let gravity = document.getElementById('gravity-control');
-let gravityValue = gravity.value;
-gravity.addEventListener('change', e => gravityValue = e.target.value);
+let gravityValue = parseInt(gravity.value, 10);
+gravity.addEventListener('change', e => gravityValue = parseInt(e.target.value, 10));
 
 requestAnimationFrame(animate);
 
@@ -84,31 +86,43 @@ function animate(ts) {
 
     for (let i = 0; i <= geometryFigures.length - 1; i++) {
         let e = geometryFigures[i];
+        
         e.gravity = gravityValue;
+
+        
         e.update(dt);
 
         if (e.position.y + e.height >= canvas.height) {
-            e.velocityX = (Math.random() * 2 - 1) * 150;
-            e.velocityY = Math.random() * -300 - 20;
+            // e.velocityX = (Math.random() * 2 - 1) * 150;
+            // e.velocityY = Math.random() * -300 - 20;
+            e.position.y = canvas.height - e.height
+            e.velocityY *= -1
+            e.velocityY *= BOUNCE_FACTOR
         }
 
         // circle left border out of bounds bounce back fix
         if (e.randomGeometry < 0.5) {
             if (e.position.x - e.width < 0) {
+                e.position.x = e.width
                 e.velocityX *= -1;
             } else if (e.position.x + e.width >= canvas.width) {
+                e.position.x = canvas.width - e.width
                 e.velocityX *= -1;
             }
             if (e.position.y - e.height < 0) {
+                e.position.y = e.height
                 e.velocityY *= -1;
             }
         } else {
             if (e.position.x < 0) {
+                e.position.x = 0
                 e.velocityX *= -1;
             } else if (e.position.x + e.width >= canvas.width) {
+                e.position.x = canvas.width - e.width
                 e.velocityX *= -1;
             }
             if (e.position.y < 0) {
+                e.position.y = 0
                 e.velocityY *= -1;
             }
         }
@@ -124,10 +138,10 @@ function animate(ts) {
 
 canvas.addEventListener('click', e => {
     const randRadius = getRandomArbitrary(10, 30);
-    let positionX = e.offsetX;
-    let positionY = e.offsetY;
+    let positionX = e.offsetX * devicePixelRatio;
+    let positionY = e.offsetY * devicePixelRatio;
 
-    // click canvas border object create out of bounds fix
+    // // click canvas border object create out of bounds fix
     if (positionY - randRadius < 0) {
         positionY = randRadius + 1;
     } else if (positionY + randRadius / 2 > canvas.height) {
@@ -139,7 +153,6 @@ canvas.addEventListener('click', e => {
     } else if (positionX + randRadius / 2 > canvas.width) {
         positionX = canvas.width - randRadius + 1;
     }
-
 
     const figure = new Geometry({
         position: {
